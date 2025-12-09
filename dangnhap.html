@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* GIỮ NGUYÊN CSS GIỐNG TRANG ĐĂNG KÝ ĐỂ ĐỒNG BỘ */
         :root {
             --primary: #4361EE;
             --bg: #F0F4F8;
@@ -19,22 +18,14 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
         
         body { 
-            background-color: var(--bg); 
-            height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px;
+            background-color: var(--bg); height: 100vh; 
+            display: flex; align-items: center; justify-content: center; padding: 20px;
         }
 
         .auth-container {
-            background: white;
-            width: 100%;
-            max-width: 420px;
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(67, 97, 238, 0.1);
-            text-align: center;
+            background: white; width: 100%; max-width: 420px;
+            padding: 40px; border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(67, 97, 238, 0.1); text-align: center;
         }
 
         .logo {
@@ -46,7 +37,7 @@
         h2 { color: var(--text); margin-bottom: 5px; font-size: 22px; }
         p.sub-text { color: #888; font-size: 14px; margin-bottom: 30px; }
 
-        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group { margin-bottom: 15px; text-align: left; }
         .form-label { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: block; color: #555; margin-left: 5px; }
         
         .input-wrapper { position: relative; }
@@ -60,12 +51,9 @@
         input:focus { border-color: var(--primary); background: white; }
 
         button { 
-            width: 100%; padding: 16px; 
-            background: var(--gradient); color: white; 
-            border: none; border-radius: 50px; 
-            font-weight: 700; font-size: 16px; cursor: pointer; 
-            transition: 0.3s; box-shadow: 0 5px 20px rgba(67, 97, 238, 0.3);
-            margin-top: 10px;
+            width: 100%; padding: 16px; background: var(--gradient); color: white; 
+            border: none; border-radius: 50px; font-weight: 700; font-size: 16px; cursor: pointer; 
+            transition: 0.3s; box-shadow: 0 5px 20px rgba(67, 97, 238, 0.3); margin-top: 5px;
         }
         button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4); }
         button:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
@@ -74,10 +62,13 @@
         .link a { color: var(--primary); text-decoration: none; font-weight: 600; }
         .link a:hover { text-decoration: underline; }
         
+        .forgot-pass { text-align: right; margin-bottom: 20px; font-size: 13px; }
+        .forgot-pass a { color: #888; text-decoration: none; transition: 0.3s; }
+        .forgot-pass a:hover { color: var(--primary); }
+
         .error-msg {
-            background: #FFF5F5; color: #EF476F; 
-            padding: 10px; border-radius: 10px; font-size: 13px; 
-            margin-bottom: 20px; display: none; border: 1px solid #FFCDD2;
+            background: #FFF5F5; color: #EF476F; padding: 10px; border-radius: 10px; 
+            font-size: 13px; margin-bottom: 20px; display: none; border: 1px solid #FFCDD2;
         }
     </style>
 </head>
@@ -98,12 +89,16 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 10px;">
             <label class="form-label">Mật khẩu</label>
             <div class="input-wrapper">
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" id="login-pass" placeholder="Nhập mật khẩu">
             </div>
+        </div>
+
+        <div class="forgot-pass">
+            <a href="identify.html">Quên mật khẩu?</a>
         </div>
 
         <button id="btn-login">Đăng Nhập</button>
@@ -142,14 +137,13 @@
                 const userCredential = await signInWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
 
-                // 2. Lấy thông tin User từ Database (để lấy cái Tên hiển thị)
+                // 2. Lấy thông tin User từ Database
                 const docRef = doc(db, "users", user.uid);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
                     
-                    // 3. Lưu session vào LocalStorage để home.html dùng ngay
                     const sessionData = {
                         uid: user.uid,
                         email: user.email,
@@ -157,11 +151,9 @@
                         username: userData.username
                     };
                     localStorage.setItem('flow_current_user', JSON.stringify(sessionData));
-
-                    // Chuyển hướng
                     window.location.href = 'home.html';
                 } else {
-                    showError('Lỗi dữ liệu: Không tìm thấy hồ sơ người dùng!');
+                    showError('Lỗi: Không tìm thấy hồ sơ người dùng!');
                     btn.disabled = false;
                     btn.innerText = 'Đăng Nhập';
                 }
@@ -174,7 +166,6 @@
                 } else if (error.code === 'auth/too-many-requests') {
                     msg = 'Quá nhiều lần thử sai. Hãy đợi lát nữa!';
                 }
-                
                 showError(msg);
                 btn.innerText = 'Đăng Nhập';
                 btn.disabled = false;
