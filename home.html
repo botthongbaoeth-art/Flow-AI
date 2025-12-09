@@ -12,6 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/otpauth/9.1.4/otpauth.umd.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     
     <style>
         /* --- CORE STYLES --- */
@@ -158,6 +159,16 @@
         .toast-notify.show { transform: translateX(-50%) translateY(0); }
         .toast-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
 
+        /* FACEID UI STYLES */
+        .face-scan-container { position: relative; width: 250px; height: 250px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; background: #000; display:flex; align-items:center; justify-content:center; }
+        .face-scan-container video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); } /* Mirror Effect */
+        .scan-ring { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; border: 4px solid rgba(67, 97, 238, 0.3); border-top-color: var(--primary); animation: spin 2s linear infinite; box-shadow: 0 0 20px rgba(67, 97, 238, 0.5); z-index: 10; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .face-instruction { text-align: center; margin-bottom: 20px; color: #555; font-size: 14px; }
+        
+        /* FACEID LOCK OVERLAY (Full Screen) */
+        #faceid-lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+
         /* RESPONSIVE & MOBILE FIX */
         .bottom-nav { display: none; }
         
@@ -222,6 +233,16 @@
     </style>
 </head>
 <body>
+
+<div id="faceid-lock-screen">
+    <div class="face-scan-container" style="width: 200px; height: 200px;">
+        <video id="video-verify" autoplay muted playsinline></video>
+        <div class="scan-ring"></div>
+    </div>
+    <h2 style="margin-bottom: 10px;">Xác thực FaceID</h2>
+    <p id="face-status-text" style="color:#666; margin-bottom: 20px;">Đang quét khuôn mặt...</p>
+    <button class="btn-outline" style="width:auto; padding: 10px 30px;" onclick="app.logout()">Đăng xuất</button>
+</div>
 
 <div id="auth-check-overlay" class="auth-overlay">
     <div class="auth-box">
@@ -399,12 +420,15 @@
                 <input type="file" id="avatar-inp" hidden accept="image/*" onchange="app.updateAvatar(this)">
                 <h3 id="pf-name" style="display: flex; justify-content: center; align-items: center;">...</h3>
                 <p style="color:#888; font-size:13px">Thành viên từ: <span id="pf-joined">...</span></p>
-                <div style="display:flex; gap:10px; justify-content:center; margin-top:10px">
+                <div style="display:flex; gap:10px; justify-content:center; margin-top:10px; flex-wrap: wrap;">
                     <button class="btn-primary" style="width:auto; padding:8px 20px; font-size:13px; background:#fff; color:var(--text-main); border:1px solid #ddd;" onclick="app.runSecurityCheck()">
                         <i class="fa-solid fa-shield-halved" style="color:var(--success)"></i> Bảo mật
                     </button>
                     <button class="btn-primary" style="width:auto; padding:8px 20px; font-size:13px; background:#EEF4FF; color:var(--primary); border:1px solid var(--primary);" onclick="app.showMyQR()">
                         <i class="fa-solid fa-qrcode"></i> Mã nhận tiền
+                    </button>
+                    <button class="btn-primary" style="width:auto; padding:8px 20px; font-size:13px; background:#111; color:white; border:none;" onclick="app.openSetupFaceID()">
+                        <i class="fa-solid fa-face-smile"></i> FaceID
                     </button>
                 </div>
             </div>
@@ -471,6 +495,19 @@
         <div class="popup-title" id="pop-title" style="font-weight:700; font-size:18px; margin-bottom:10px"></div>
         <div class="popup-desc" id="pop-desc" style="color:#666; margin-bottom:20px; font-size:14px"></div>
         <div class="popup-actions"><button class="btn-primary" onclick="app.closePopup()">Đóng</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-faceid-setup">
+    <div class="modal-box" style="text-align:center">
+        <h3>Thiết lập FaceID</h3>
+        <p class="face-instruction">Di chuyển nhẹ khuôn mặt trong vòng tròn để quét</p>
+        <div class="face-scan-container">
+            <video id="video-setup" autoplay muted playsinline></video>
+            <div class="scan-ring"></div>
+        </div>
+        <button class="btn-primary" id="btn-start-scan" onclick="app.captureFace()">Bắt đầu quét</button>
+        <button class="btn-outline" onclick="app.closeModal()">Hủy</button>
     </div>
 </div>
 
@@ -587,6 +624,13 @@
             let dId = localStorage.getItem('flow_device_id');
             if(!dId) { dId = 'dev_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('flow_device_id', dId); }
             this.currentDeviceId = dId;
+            
+            // Load Face API models
+            Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models')
+            ]).then(() => console.log("Face models loaded"));
 
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
@@ -596,14 +640,18 @@
                     if (userDoc.exists()) {
                         this.userData = userDoc.data();
                         
-                        // CHECK 2FA
+                        // LOGIN CHECKS
                         if(this.userData.is2FAEnabled) {
                             document.getElementById('auth-check-overlay').classList.add('active');
+                        }
+                        // FACE ID CHECK
+                        if(this.userData.faceDescriptor) {
+                            this.checkLoginFaceID();
                         }
 
                         this.renderProfile(); this.renderWallet(); this.listenGroup();
                         this.initDeviceHeartbeat();
-                        this.listenUserFund(); // Listen for fund contributions
+                        this.listenUserFund(); 
                     }
                     this.listenTransactions();
                 } else { window.location.href = 'dangnhap.html'; }
@@ -644,6 +692,75 @@
             document.getElementById('toast-msg').innerText = msg;
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 4000);
+        },
+
+        // --- FACE ID LOGIC ---
+        openSetupFaceID() {
+            this.openModal('faceid-setup');
+            const video = document.getElementById('video-setup');
+            navigator.mediaDevices.getUserMedia({ video: {} }).then(stream => { video.srcObject = stream; });
+        },
+        
+        async captureFace() {
+            const video = document.getElementById('video-setup');
+            const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+            
+            if (detection) {
+                // Convert Float32Array to Array for Firestore
+                const descriptorArray = Array.from(detection.descriptor);
+                await updateDoc(doc(db, "users", this.currentUser.uid), { faceDescriptor: descriptorArray });
+                this.userData.faceDescriptor = descriptorArray;
+                
+                // Stop camera
+                const stream = video.srcObject;
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+                
+                this.closeModal();
+                this.showPopup('success', 'FaceID Đã Lưu', 'Bạn có thể đăng nhập bằng khuôn mặt lần sau.');
+            } else {
+                this.showPopup('error', 'Không tìm thấy khuôn mặt', 'Vui lòng giữ yên và đủ ánh sáng.');
+            }
+        },
+
+        async checkLoginFaceID() {
+            // Show lock screen immediately
+            const lockScreen = document.getElementById('faceid-lock-screen');
+            const statusText = document.getElementById('face-status-text');
+            const video = document.getElementById('video-verify');
+            lockScreen.style.display = 'flex';
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+                video.srcObject = stream;
+                
+                // Load saved descriptor
+                const savedDescriptor = new Float32Array(this.userData.faceDescriptor);
+                const faceMatcher = new faceapi.FaceMatcher(savedDescriptor, 0.6); // Distance threshold 0.6
+                
+                const interval = setInterval(async () => {
+                    const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+                    
+                    if (detection) {
+                        const match = faceMatcher.findBestMatch(detection.descriptor);
+                        // Match Logic: distance < 0.4 is very strict (good match). 0.6 is loose.
+                        // We want 70-100% confidence. Distance 0.3 means 70% match approx.
+                        if (match.distance < 0.4) { 
+                            clearInterval(interval);
+                            statusText.innerHTML = '<span style="color:var(--success)">Xác thực thành công!</span>';
+                            setTimeout(() => {
+                                lockScreen.style.display = 'none';
+                                // Stop camera
+                                stream.getTracks().forEach(track => track.stop());
+                            }, 1000);
+                        }
+                    }
+                }, 500); // Check every 500ms
+            } catch(e) {
+                console.error(e);
+                statusText.innerText = "Lỗi Camera. Vui lòng cấp quyền.";
+            }
         },
 
         // --- QR SCANNING & MY QR ---
@@ -827,4 +944,3 @@
 </script>
 </body>
 </html>
-
