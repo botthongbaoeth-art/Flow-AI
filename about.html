@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Về chúng tôi - Ví Flow</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CORE STYLES (Đồng bộ với Dashboard) --- */
+        :root { 
+            --primary: #4361EE; 
+            --accent: #4CC9F0; 
+            --bg-body: #F8F9FA; 
+            --text-main: #2B2D42; 
+            --text-light: #8D99AE; 
+            --gradient: linear-gradient(135deg, #4361EE 0%, #4CC9F0 100%); 
+            --radius: 20px; 
+            --shadow: 0 10px 30px rgba(67, 97, 238, 0.1); 
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        
+        /* HEADER / NAV */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 5%; background: white; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+        .logo { 
+            font-size: 24px; font-weight: 800; 
+            background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
+        }
+        .nav-menu { display: flex; gap: 30px; font-weight: 500; color: var(--text-main); }
+        .nav-menu a:hover { color: var(--primary); }
+        
+        .btn-action {
+            background: var(--primary); color: white; padding: 10px 25px; 
+            border-radius: 50px; font-weight: 600; box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+        }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3); }
+
+        /* HERO SECTION */
+        .hero {
+            text-align: center; padding: 80px 20px; background: white;
+            border-bottom-left-radius: 50px; border-bottom-right-radius: 50px;
+            margin-bottom: 20px;
+        }
+        .hero h1 { font-size: 48px; font-weight: 800; margin-bottom: 20px; line-height: 1.2; }
+        .hero span { color: var(--primary); }
+        .hero p { color: var(--text-light); font-size: 18px; max-width: 600px; margin: 0 auto 30px; }
+        
+        /* FEATURES GRID */
+        .container { max-width: 1100px; margin: 0 auto; padding: 50px 20px; }
+        .section-title { text-align: center; font-size: 32px; font-weight: 700; margin-bottom: 50px; }
+        
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .feature-card { 
+            background: white; padding: 30px; border-radius: var(--radius); 
+            text-align: center; transition: 0.3s; border: 1px solid #eee;
+        }
+        .feature-card:hover { transform: translateY(-10px); box-shadow: var(--shadow); border-color: var(--accent); }
+        .f-icon { 
+            width: 70px; height: 70px; background: #EEF4FF; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin: 0 auto 20px; font-size: 28px; color: var(--primary);
+        }
+        .feature-card h3 { margin-bottom: 10px; font-size: 20px; }
+        .feature-card p { color: var(--text-light); font-size: 14px; line-height: 1.6; }
+
+        /* STATS */
+        .stats-row { 
+            display: flex; justify-content: space-around; margin: 80px 0; 
+            background: var(--gradient); padding: 50px; border-radius: 30px; color: white;
+            flex-wrap: wrap; gap: 30px;
+        }
+        .stat-item { text-align: center; }
+        .stat-num { font-size: 42px; font-weight: 800; margin-bottom: 5px; }
+        .stat-label { font-size: 16px; opacity: 0.9; }
+
+        /* FOOTER */
+        footer { background: white; padding: 50px 20px; margin-top: 50px; border-top: 1px solid #eee; text-align: center; }
+        .socials { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
+        .social-btn { width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: var(--text-main); transition: 0.3s; }
+        .social-btn:hover { background: var(--primary); color: white; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 15px; }
+            .nav-menu { gap: 20px; font-size: 14px; }
+            .hero h1 { font-size: 32px; }
+            .stats-row { flex-direction: column; border-radius: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='home.html'">
+            <i class="fa-solid fa-layer-group"></i> Ví Flow
+        </div>
+        <div class="nav-menu">
+            <a href="home.html">Trang chủ</a>
+            <a href="#" style="color:var(--primary); font-weight:700">Giới thiệu</a>
+            <a href="#">Bảo mật</a>
+            <a href="#">Liên hệ</a>
+        </div>
+        <a href="home.html" class="btn-action">Vào Dashboard <i class="fa-solid fa-arrow-right"></i></a>
+    </nav>
+
+    <section class="hero">
+        <h1>Quản lý tài chính <br><span>Thông minh & Đơn giản</span></h1>
+        <p>Ví Flow giúp bạn theo dõi thu chi, quản lý quỹ nhóm và đạt được mục tiêu tài chính với giao diện trực quan, hiện đại.</p>
+        <img src="https://cdni.iconscout.com/illustration/premium/thumb/budget-planning-illustration-download-in-svg-png-gif-file-formats--financial-management-finance-analytics-business-marketing-pack-illustrations-3686280.png?f=webp" alt="Finance Illustration" style="max-width: 100%; height: auto; width: 400px;">
+    </section>
+
+    <div class="container">
+        <div class="section-title">Tại sao chọn Ví Flow?</div>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="f-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <h3>Báo cáo Trực quan</h3>
+                <p>Biểu đồ thống kê Thu - Chi - Góp quỹ rõ ràng giúp bạn nắm bắt tình hình tài chính chỉ trong nháy mắt.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon"><i class="fa-solid fa-users"></i></div>
+                <h3>Quỹ Nhóm & Gia đình</h3>
+                <p>Dễ dàng tạo nhóm, mời thành viên và quản lý quỹ chung minh bạch. Ai đóng, ai tiêu đều được ghi lại.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Bảo mật Tuyệt đối</h3>
+                <p>Hệ thống bảo mật 2 lớp (2FA) với Google Authenticator và mã hóa dữ liệu giúp tài khoản của bạn luôn an toàn.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="f-icon"><i class="fa-solid fa-bolt"></i></div>
+                <h3>Nhanh & Tiện lợi</h3>
+                <p>Tốc độ xử lý siêu nhanh, hỗ trợ quét Bill bằng AI và liên kết nhiều tài khoản ngân hàng cùng lúc.</p>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-num">10k+</div>
+                <div class="stat-label">Người dùng tin cậy</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">50k+</div>
+                <div class="stat-label">Giao dịch mỗi tháng</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">99.9%</div>
+                <div class="stat-label">An toàn & Bảo mật</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; max-width: 700px; margin: 0 auto;">
+            <div class="section-title">Sứ mệnh của chúng tôi</div>
+            <p style="font-size: 16px; line-height: 1.8; color: #555;">
+                Chúng tôi tin rằng tự do tài chính bắt đầu từ việc kiểm soát những khoản chi nhỏ nhất. 
+                <strong>Ví Flow</strong> được xây dựng với mục tiêu đơn giản hóa việc quản lý tiền bạc cho cá nhân và gia đình Việt, 
+                mang lại sự an tâm và minh bạch trong từng giao dịch.
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="logo" style="justify-content: center; margin-bottom: 15px;">Ví Flow</div>
+        <p style="color:#888; font-size:14px">Giải pháp quản lý tài chính toàn diện cho người Việt.</p>
+        
+        <div class="socials">
+            <a href="https://fb.com/lenhanriel" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://instagram.com/@nh4n.vn" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+            <a href="mailto:lenhancute1@gmail.com" class="social-btn"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+        
+        <p style="font-size: 13px; color: #aaa;">&copy; 2024 Ví Flow. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
