@@ -125,9 +125,9 @@
         #chart-bar-exp { background: var(--danger); box-shadow: 0 4px 10px rgba(239, 71, 111, 0.3); }
         #chart-bar-fund { background: var(--warning); box-shadow: 0 4px 10px rgba(255, 209, 102, 0.3); }
 
-        /* SCANNER STYLE */
-        #qr-reader { width: 100%; border-radius: 15px; overflow: hidden; margin-bottom: 10px; }
-        #qr-reader video { object-fit: cover; border-radius: 15px; width: 100%; }
+        /* SCANNER STYLE - UPDATED */
+        #qr-reader { width: 100%; border-radius: 15px; overflow: hidden; margin-bottom: 10px; min-height: 250px; background: #000; }
+        #qr-reader video { object-fit: cover; border-radius: 15px; width: 100%; height: 100%; }
 
         /* RESPONSIVE & MOBILE FIX */
         .bottom-nav { display: none; }
@@ -188,7 +188,7 @@
         .popup-overlay.active { opacity: 1; pointer-events: auto; }
         .popup-box { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
 
-        /* FIX: SCAN MODAL Z-INDEX TO BE ON TOP OF OTHER MODALS */
+        /* FIX: SCAN MODAL Z-INDEX HIGH */
         #modal-scan-qr { z-index: 2000 !important; }
     </style>
 </head>
@@ -577,7 +577,7 @@
         startScanTransfer() {
             this.openModal('scan-qr');
             
-            // FIX: Sử dụng Html5Qrcode (thay vì Scanner UI mặc định) để kiểm soát camera tốt hơn
+            // FIX: Sử dụng Html5Qrcode để tự động mở camera sau
             const html5QrCode = new Html5Qrcode("qr-reader");
             this.html5QrcodeScanner = html5QrCode;
 
