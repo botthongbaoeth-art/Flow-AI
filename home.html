@@ -126,8 +126,8 @@
         #chart-bar-fund { background: var(--warning); box-shadow: 0 4px 10px rgba(255, 209, 102, 0.3); }
 
         /* SCANNER STYLE */
-        #qr-reader { width: 100%; border-radius: 15px; overflow: hidden; }
-        #qr-reader video { object-fit: cover; border-radius: 15px; }
+        #qr-reader { width: 100%; border-radius: 15px; overflow: hidden; margin-bottom: 10px; }
+        #qr-reader video { object-fit: cover; border-radius: 15px; width: 100%; }
 
         /* RESPONSIVE & MOBILE FIX */
         .bottom-nav { display: none; }
@@ -188,7 +188,7 @@
         .popup-overlay.active { opacity: 1; pointer-events: auto; }
         .popup-box { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
 
-        /* FIX: SCAN MODAL Z-INDEX */
+        /* FIX: SCAN MODAL Z-INDEX TO BE ON TOP OF OTHER MODALS */
         #modal-scan-qr { z-index: 2000 !important; }
     </style>
 </head>
@@ -576,7 +576,12 @@
 
         startScanTransfer() {
             this.openModal('scan-qr');
-            const onScanSuccess = (decodedText, decodedResult) => {
+            
+            // FIX: Sử dụng Html5Qrcode (thay vì Scanner UI mặc định) để kiểm soát camera tốt hơn
+            const html5QrCode = new Html5Qrcode("qr-reader");
+            this.html5QrcodeScanner = html5QrCode;
+
+            const qrCodeSuccessCallback = (decodedText, decodedResult) => {
                 // Check format
                 if (decodedText.startsWith('FLOW|')) {
                     const parts = decodedText.split('|');
@@ -594,16 +599,23 @@
                 }
             };
 
-            this.html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
-            this.html5QrcodeScanner.render(onScanSuccess);
+            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            
+            // Bắt buộc dùng camera sau (environment)
+            html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+            .catch(err => {
+                console.log("Error starting scanner", err);
+                this.showPopup('error', 'Lỗi Camera', 'Vui lòng cấp quyền camera');
+            });
         },
 
         closeScanner() {
             if(this.html5QrcodeScanner) {
-                this.html5QrcodeScanner.clear().then(_ => {
+                this.html5QrcodeScanner.stop().then(_ => {
+                    this.html5QrcodeScanner.clear();
                     this.closeModal();
                 }).catch(error => {
-                    console.error("Failed to clear scanner", error);
+                    console.error("Failed to stop scanner", error);
                     this.closeModal();
                 });
             } else {
