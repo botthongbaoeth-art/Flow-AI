@@ -100,7 +100,7 @@
         .auth-overlay.active { display: flex; }
         .auth-box { width: 100%; max-width: 400px; text-align: center; }
 
-        /* SECURITY CHECK MODAL STYLES (NEW) */
+        /* SECURITY CHECK MODAL STYLES */
         .sec-step-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 14px; }
         .sec-step-item:last-child { border-bottom: none; }
         .sec-step-label { display: flex; align-items: center; gap: 10px; }
@@ -109,7 +109,7 @@
         .score-circle { width: 80px; height: 80px; border-radius: 50%; background: var(--gradient); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; margin: 0 auto 10px; box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3); }
         .recommendation { color: var(--danger); font-size: 13px; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 5px; }
 
-        /* CHART STYLES (NEW) */
+        /* CHART STYLES */
         .bar-chart-3-col { display: flex; justify-content: space-around; align-items: flex-end; height: 200px; padding-top: 30px; }
         .b3-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 30%; position: relative; }
         .b3-bar { width: 40px; border-radius: 10px 10px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); min-height: 5px; position: relative; }
@@ -137,18 +137,36 @@
             .bottom-nav { 
                 position: fixed; bottom: 0; left: 0; width: 100%; 
                 background: white; border-top: 1px solid #eee; 
-                display: flex; justify-content: space-around; 
-                padding: 12px 0 20px; z-index: 100;
+                display: flex; justify-content: space-between; /* Đổi thành space-between để dàn đều */
+                padding: 12px 10px 20px; 
+                z-index: 100;
                 height: 80px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+                overflow: visible; /* Để nút tròn lồi lên được */
             } 
             .b-nav-item { 
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 color: #aaa; font-size: 12px; gap: 6px; border:none; background:none; 
-                width: 25%; height: 100%; cursor: pointer; user-select: none;
+                flex: 1; /* Tự chia đều khoảng trống */
+                height: 100%; cursor: pointer; user-select: none;
             } 
             .b-nav-item i { font-size: 26px; transition: 0.2s; margin-bottom: 2px; }
             .b-nav-item.active { color: var(--primary); font-weight: 600; }
             .b-nav-item.active i { transform: translateY(-3px); }
+
+            /* NÚT GIỮA TO TRÒN */
+            .b-nav-middle {
+                width: 60px; height: 60px;
+                background: var(--gradient);
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                color: white; font-size: 22px;
+                transform: translateY(-25px); /* Đẩy lên cao */
+                box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+                border: 5px solid white; /* Viền trắng tách biệt */
+                cursor: pointer;
+                flex-shrink: 0; /* Không bị bóp méo */
+                margin: 0 10px;
+            }
         }
 
         /* MODAL */
@@ -358,6 +376,11 @@
     <nav class="bottom-nav">
         <button class="b-nav-item active" onclick="app.nav('home')"><i class="fa-solid fa-house"></i>Home</button>
         <button class="b-nav-item" onclick="app.nav('wallet')"><i class="fa-solid fa-wallet"></i>Ví</button>
+        
+        <div class="b-nav-middle" onclick="app.openModal('transfer')">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+        </div>
+
         <button class="b-nav-item" onclick="app.nav('groups')"><i class="fa-solid fa-users"></i>Nhóm</button>
         <button class="b-nav-item" onclick="app.nav('profile')"><i class="fa-solid fa-user"></i>Hồ sơ</button>
     </nav>
