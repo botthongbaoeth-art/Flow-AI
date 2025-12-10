@@ -159,12 +159,82 @@
         .toast-notify.show { transform: translateX(-50%) translateY(0); }
         .toast-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
 
-        /* FACEID UI STYLES */
-        .face-scan-container { position: relative; width: 250px; height: 250px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; background: #000; display:flex; align-items:center; justify-content:center; }
-        .face-scan-container video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); } /* Mirror Effect */
-        .scan-ring { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; border: 4px solid rgba(67, 97, 238, 0.3); border-top-color: var(--primary); animation: spin 2s linear infinite; box-shadow: 0 0 20px rgba(67, 97, 238, 0.5); z-index: 10; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .face-instruction { text-align: center; margin-bottom: 20px; color: #555; font-size: 14px; }
+        /* --- FACEID UI STYLES - NEW UPDATED --- */
+        .face-scan-container {
+            position: relative;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px dashed #666; /* Mặc định nét đứt khi chưa tìm thấy mặt */
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .face-scan-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Gương */
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        /* Khi phát hiện mặt */
+        .face-scan-container.face-detected {
+            border: 4px solid var(--primary); /* Đổi sang viền liền màu xanh */
+            box-shadow: 0 0 20px var(--primary);
+        }
+        .face-scan-container.face-detected video {
+            opacity: 1;
+        }
+
+        /* PC VIEW: Khung vuông + Tia quét */
+        @media (min-width: 901px) {
+            .face-scan-container {
+                width: 480px;
+                height: 360px;
+                border-radius: 20px; /* Vuông bo góc */
+            }
+            .scan-line {
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 5px;
+                background: var(--success);
+                box-shadow: 0 0 15px var(--success);
+                animation: scanMove 2s linear infinite;
+                opacity: 0; z-index: 10;
+            }
+            .face-scan-container.face-detected .scan-line { opacity: 1; }
+            @keyframes scanMove { 0% { top:0; opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { top:100%; opacity:0; } }
+            .scan-ring { display: none; }
+        }
+
+        /* MOBILE VIEW: Khung tròn + Vòng xoay */
+        @media (max-width: 900px) {
+            .face-scan-container {
+                width: 260px;
+                height: 260px;
+                border-radius: 50%; /* Tròn */
+            }
+            .scan-ring {
+                position: absolute;
+                top: -4px; left: -4px; right: -4px; bottom: -4px;
+                border-radius: 50%;
+                border: 4px solid transparent;
+                border-top-color: var(--success);
+                border-left-color: var(--success);
+                animation: spin 2s linear infinite;
+                z-index: 10;
+                opacity: 0;
+            }
+            .face-scan-container.face-detected .scan-ring { opacity: 1; }
+            .scan-line { display: none; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        }
+
+        .face-instruction { text-align: center; margin-bottom: 20px; color: #555; font-size: 14px; background: #f0f0f0; padding: 8px 15px; border-radius: 20px; display: inline-block; }
         
         /* FACEID LOCK OVERLAY (Full Screen) */
         #faceid-lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
@@ -235,12 +305,13 @@
 <body>
 
 <div id="faceid-lock-screen">
-    <div class="face-scan-container" style="width: 200px; height: 200px;">
+    <div class="face-scan-container" id="face-container-verify">
         <video id="video-verify" autoplay muted playsinline></video>
         <div class="scan-ring"></div>
+        <div class="scan-line"></div>
     </div>
-    <h2 style="margin-bottom: 10px;">Xác thực FaceID</h2>
-    <p id="face-status-text" style="color:#666; margin-bottom: 20px;">Đang quét khuôn mặt...</p>
+    <h2 style="margin-bottom: 10px; margin-top: 15px;">Xác thực FaceID</h2>
+    <p id="face-status-text" class="face-instruction">Đang tìm khuôn mặt...</p>
     <button class="btn-outline" style="width:auto; padding: 10px 30px;" onclick="app.logout()">Đăng xuất</button>
 </div>
 
@@ -499,12 +570,13 @@
 </div>
 
 <div class="modal-overlay" id="modal-faceid-setup">
-    <div class="modal-box" style="text-align:center">
+    <div class="modal-box" style="text-align:center; max-width: 600px;">
         <h3>Thiết lập FaceID</h3>
-        <p class="face-instruction">Di chuyển nhẹ khuôn mặt trong vòng tròn để quét</p>
-        <div class="face-scan-container">
+        <p class="face-instruction">Giữ khuôn mặt trong khung hình</p>
+        <div class="face-scan-container" id="face-container-setup">
             <video id="video-setup" autoplay muted playsinline></video>
             <div class="scan-ring"></div>
+            <div class="scan-line"></div>
         </div>
         <button class="btn-primary" id="btn-start-scan" onclick="app.captureFace()">Bắt đầu quét</button>
         <button class="btn-outline" onclick="app.closeModal()">Hủy</button>
@@ -694,7 +766,7 @@
             setTimeout(() => t.classList.remove('show'), 4000);
         },
 
-        // --- FACE ID LOGIC ---
+        // --- FACE ID LOGIC (UPDATED) ---
         openSetupFaceID() {
             this.openModal('faceid-setup');
             const video = document.getElementById('video-setup');
@@ -703,60 +775,88 @@
         
         async captureFace() {
             const video = document.getElementById('video-setup');
+            const container = document.getElementById('face-container-setup'); 
+
+            // Giả lập trạng thái detect để UI phản hồi
+            container.classList.add('face-detected');
+
             const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
             
             if (detection) {
-                // Convert Float32Array to Array for Firestore
                 const descriptorArray = Array.from(detection.descriptor);
                 await updateDoc(doc(db, "users", this.currentUser.uid), { faceDescriptor: descriptorArray });
                 this.userData.faceDescriptor = descriptorArray;
                 
-                // Stop camera
                 const stream = video.srcObject;
                 const tracks = stream.getTracks();
                 tracks.forEach(track => track.stop());
                 video.srcObject = null;
                 
                 this.closeModal();
+                container.classList.remove('face-detected');
                 this.showPopup('success', 'FaceID Đã Lưu', 'Bạn có thể đăng nhập bằng khuôn mặt lần sau.');
             } else {
-                this.showPopup('error', 'Không tìm thấy khuôn mặt', 'Vui lòng giữ yên và đủ ánh sáng.');
+                container.classList.remove('face-detected');
+                this.showPopup('error', 'Không tìm thấy khuôn mặt', 'Hãy giữ yên và nhìn thẳng vào cam.');
             }
         },
 
         async checkLoginFaceID() {
-            // Show lock screen immediately
+            // [SESSION CHECK] Đã xác thực trong phiên này chưa?
+            if (sessionStorage.getItem('isFaceVerified') === 'true') {
+                return; 
+            }
+
             const lockScreen = document.getElementById('faceid-lock-screen');
             const statusText = document.getElementById('face-status-text');
             const video = document.getElementById('video-verify');
+            const container = document.getElementById('face-container-verify');
+
             lockScreen.style.display = 'flex';
             
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
                 video.srcObject = stream;
                 
-                // Load saved descriptor
+                if(!this.userData.faceDescriptor) {
+                    lockScreen.style.display = 'none';
+                    return;
+                }
+
                 const savedDescriptor = new Float32Array(this.userData.faceDescriptor);
-                const faceMatcher = new faceapi.FaceMatcher(savedDescriptor, 0.6); // Distance threshold 0.6
+                const faceMatcher = new faceapi.FaceMatcher(savedDescriptor, 0.6); 
                 
                 const interval = setInterval(async () => {
                     const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
                     
                     if (detection) {
+                        // [UI CHANGE] Thấy mặt -> Đổi viền + Animation
+                        container.classList.add('face-detected');
+                        statusText.innerText = "Đang xác thực...";
+                        statusText.style.color = "var(--primary)";
+
                         const match = faceMatcher.findBestMatch(detection.descriptor);
-                        // Match Logic: distance < 0.4 is very strict (good match). 0.6 is loose.
-                        // We want 70-100% confidence. Distance 0.3 means 70% match approx.
-                        if (match.distance < 0.4) { 
+                        if (match.distance < 0.45) { 
                             clearInterval(interval);
-                            statusText.innerHTML = '<span style="color:var(--success)">Xác thực thành công!</span>';
+                            statusText.innerHTML = '<span style="color:var(--success)"><i class="fa-solid fa-check"></i> OK!</span>';
+                            container.style.borderColor = 'var(--success)';
+                            
+                            // [SESSION SAVE]
+                            sessionStorage.setItem('isFaceVerified', 'true');
+
                             setTimeout(() => {
                                 lockScreen.style.display = 'none';
-                                // Stop camera
                                 stream.getTracks().forEach(track => track.stop());
-                            }, 1000);
+                            }, 800);
                         }
+                    } else {
+                        // [UI CHANGE] Mất mặt -> Reset về viền đứt
+                        container.classList.remove('face-detected');
+                        statusText.innerText = "Di chuyển khuôn mặt vào khung...";
+                        statusText.style.color = "#666";
+                        container.style.borderColor = '#666';
                     }
-                }, 500); // Check every 500ms
+                }, 500);
             } catch(e) {
                 console.error(e);
                 statusText.innerText = "Lỗi Camera. Vui lòng cấp quyền.";
@@ -866,7 +966,6 @@
                 
                 if(txs.length===0) list.innerHTML='<div style="text-align:center;color:#999;padding:20px">Chưa có giao dịch. Số dư 0đ</div>'; 
                 else txs.forEach(t => {
-                    // Logic màu sắc mũi tên
                     const isInc = t.type === 'inc';
                     const color = isInc ? 'var(--success)' : 'var(--danger)';
                     const icon = isInc ? 'fa-arrow-down' : 'fa-arrow-up'; 
@@ -934,7 +1033,10 @@
                 }
             } 
         },
-        logout() { signOut(auth).then(()=>window.location.href='dangnhap.html'); },
+        logout() { 
+            sessionStorage.removeItem('isFaceVerified');
+            signOut(auth).then(()=>window.location.href='dangnhap.html'); 
+        },
         nav(id) { document.querySelectorAll('.view-section').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.b-nav-item').forEach(e=>e.classList.remove('active')); event.currentTarget.classList.add('active'); },
         openModal(id) { document.getElementById('modal-'+id).classList.add('open'); },
         closeModal() { document.querySelectorAll('.modal-overlay').forEach(e=>e.classList.remove('open')); },
@@ -944,4 +1046,3 @@
 </script>
 </body>
 </html>
-
