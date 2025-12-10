@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/otpauth/9.1.4/otpauth.umd.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     
     <style>
         /* --- CORE STYLES --- */
@@ -65,6 +65,19 @@
         .act-btn i { font-size: 22px; color: var(--primary); margin-bottom: 8px; background: #EEF4FF; padding: 12px; border-radius: 50%; }
         .trans-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f5f5f5; cursor: pointer; transition: 0.2s; }
         
+        /* --- [FIXED] STYLE FOR TRANSACTION ICON --- */
+        .t-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
         /* WALLET STYLES */
         .bank-card { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 25px; border-radius: 20px; margin-bottom: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s; }
         .bank-card:hover { transform: translateY(-3px); }
@@ -122,7 +135,7 @@
         .b3-bar { width: 40px; border-radius: 10px 10px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); min-height: 5px; position: relative; }
         .b3-val { font-size: 12px; font-weight: 700; margin-bottom: 5px; }
         .b3-label { font-size: 13px; color: #888; margin-top: 10px; font-weight: 600; }
-        #chart-bar-inc { background: var(--success); box-shadow: 0 4px 10px rgba(6, 214, 160, 0.3); }
+        #chart-bar-inc { background: var(--success); box-shadow: 0 4px 10px rgba(0, 214, 160, 0.3); }
         #chart-bar-exp { background: var(--danger); box-shadow: 0 4px 10px rgba(239, 71, 111, 0.3); }
         #chart-bar-fund { background: var(--warning); box-shadow: 0 4px 10px rgba(255, 209, 102, 0.3); }
 
