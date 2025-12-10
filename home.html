@@ -602,28 +602,52 @@
                     <div class="pf-menu-right"><i class="fa-solid fa-angle-down"></i></div>
                 </div>
                 
-                <div id="general-info-expand" style="display:none; background:#f9f9f9; padding:15px; border-bottom:1px solid #eee">
-                    <div class="info-row"><span class="info-label">Username</span><span class="info-val" id="pf-username">...</span></div>
-                    <div class="info-row"><span class="info-label">Email</span><span class="info-val" id="pf-email">...</span></div>
-                    <div class="info-row"><span class="info-label">Ngày tham gia</span><span class="info-val" id="pf-joined">...</span></div>
-                    
-                    <div id="phone-edit" style="display:none; margin-top:10px">
-                         <input type="tel" id="pf-phone-input" placeholder="Cập nhật SĐT" class="form-input">
-                         <button onclick="app.savePhone(this)" class="btn-primary" style="padding:5px">Lưu SĐT</button>
-                         <button onclick="app.togglePhoneEdit(false)" class="btn-outline" style="padding:5px">Hủy</button>
-                    </div>
-                    <div id="phone-view" style="margin-top:10px"><button onclick="app.togglePhoneEdit(true)" class="btn-outline">Cập nhật SĐT</button></div>
+                <div id="general-info-expand" style="display:none; background:#f9f9f9; padding:20px; border-top:1px solid #eee">
+    
+    <div class="pf-detail-row">
+        <span class="pf-detail-label">Username</span>
+        <span class="pf-detail-val" id="pf-username">...</span>
+    </div>
+    <div class="pf-detail-row">
+        <span class="pf-detail-label">Email</span>
+        <span class="pf-detail-val" id="pf-email">...</span>
+    </div>
+    <div class="pf-detail-row" style="border-bottom:none">
+        <span class="pf-detail-label">Ngày tham gia</span>
+        <span class="pf-detail-val" id="pf-joined">...</span>
+    </div>
 
-                    <div style="margin-top:15px">
-                        <div id="2fa-status-area">
-                            <div id="2fa-off"><span style="color:red">2FA đang tắt</span></div>
-                            <div id="2fa-on" style="display:none"><span style="color:green">2FA đang bật</span></div>
-                        </div>
-                    </div>
+    <div id="phone-view" style="margin-top:10px">
+        <button onclick="app.togglePhoneEdit(true)" class="btn-outline" style="background:white; border:1px solid var(--primary); color:var(--primary)">
+            <i class="fa-solid fa-phone"></i> Cập nhật SĐT
+        </button>
+    </div>
+    <div id="phone-edit" style="display:none; margin-top:10px; gap:5px">
+         <input type="tel" id="pf-phone-input" placeholder="Nhập SĐT mới" class="form-input" style="margin-bottom:5px">
+         <div style="display:flex; gap:5px">
+             <button onclick="app.savePhone(this)" class="btn-primary" style="padding:8px; font-size:13px">Lưu</button>
+             <button onclick="app.togglePhoneEdit(false)" class="btn-outline" style="padding:8px; margin-top:0">Hủy</button>
+         </div>
+    </div>
 
-                    <button class="btn-outline" onclick="app.sendPasswordReset()" style="margin-top:10px">Đổi mật khẩu</button>
-                    <div id="device-list" style="margin-top:10px"></div>
-                </div>
+    <div style="margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 10px;">
+        <div id="2fa-status-area">
+            <div id="2fa-off" style="font-weight:600; color:var(--danger); display:flex; align-items:center; gap:5px">
+                <i class="fa-solid fa-triangle-exclamation"></i> 2FA đang tắt
+            </div>
+            <div id="2fa-on" style="display:none; font-weight:600; color:var(--success); align-items:center; gap:5px">
+                <i class="fa-solid fa-shield-check"></i> 2FA đang bật
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-outline" onclick="app.sendPasswordReset()"><i class="fa-solid fa-key"></i> Đổi mật khẩu</button>
+    
+    <div style="margin-top:20px">
+        <div style="font-size:12px; font-weight:700; color:#888; margin-bottom:10px; text-transform:uppercase">Thiết bị đăng nhập</div>
+        <div id="device-list"></div>
+    </div>
+</div>
 
             </div>
         </div>
@@ -1128,3 +1152,4 @@
 </script>
 </body>
 </html>
+
